@@ -20,27 +20,40 @@ function App() {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setAccount(accounts[0]);
-        
-        // Optional: Refresh page biar data terbaru (nanti setelah integrasi)
-        // window.location.reload();
       } catch (error) {
         console.error("Gagal connect wallet:", error);
-        alert("Gagal connect MetaMask. Coba lagi ya!");
+        alert("Gagal connect MetaMask. Silakan coba lagi.");
       } finally {
         setIsConnecting(false);
       }
     } else {
-      alert("MetaMask belum terinstall! Install dulu di chrome.google.com/webstore");
+      alert("MetaMask belum terinstall. Silakan install terlebih dahulu.");
       window.open('https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn', '_blank');
     }
   };
 
-  // Fungsi disconnect (opsional)
+  // Disconnect wallet
   const disconnectWallet = () => {
     setAccount(null);
   };
 
-  // Format alamat wallet biar pendek (0x1234...5678)
+  // Handle play & pay
+  const handlePlayAndPay = (songId, songTitle, royaltyAmount) => {
+    if (!account) {
+      alert("Silakan connect wallet terlebih dahulu untuk memutar lagu.");
+      return;
+    }
+    alert(`Memutar: ${songTitle}\nRoyalti: ${royaltyAmount} ETH akan dibayarkan.`);
+    // Nanti diintegrasikan dengan smart contract
+  };
+
+  // Handle detail
+  const handleDetail = (songId, songTitle) => {
+    alert(`Detail lagu: ${songTitle}\nID: ${songId}`);
+    // Nanti bisa buka modal atau halaman detail
+  };
+
+  // Format alamat wallet (0x1234...5678)
   const formatAddress = (address) => {
     if (!address) return '';
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -51,7 +64,7 @@ function App() {
       {/* Navbar / Header */}
       <header className="navbar">
         <div className="logo">
-          <span className="logo-icon">🎵</span>
+          <span className="logo-icon">♪</span>
           <span className="logo-text">MusicRoyalty</span>
         </div>
         
@@ -62,12 +75,12 @@ function App() {
               onClick={connectWallet}
               disabled={isConnecting}
             >
-              {isConnecting ? '⏳ Connecting...' : '🔌 Connect Wallet'}
+              {isConnecting ? 'Connecting...' : 'Connect Wallet'}
             </button>
           ) : (
             <div className="wallet-info">
-              <span className="wallet-address">🦊 {formatAddress(account)}</span>
-              <button className="btn-disconnect" onClick={disconnectWallet}>Logout</button>
+              <span className="wallet-address">{formatAddress(account)}</span>
+              <button className="btn-disconnect" onClick={disconnectWallet}>Disconnect</button>
             </div>
           )}
         </div>
@@ -75,11 +88,11 @@ function App() {
 
       {/* Hero Section */}
       <section className="hero">
-        <h1>Manajemen Royalti Musik 🎵</h1>
-        <p>Transparan, Otomatis, dan Terdesentralisasi di Blockchain</p>
+        <h1>Music Royalty Management</h1>
+        <p>Transparent, Automated, and Decentralized Music Royalty System on Blockchain</p>
         {!account && (
           <button className="btn-hero" onClick={connectWallet}>
-            🚀 Mulai Sekarang
+            Get Started
           </button>
         )}
       </section>
@@ -87,8 +100,8 @@ function App() {
       {/* Daftar Lagu */}
       <div className="content-area">
         <div className="section-header">
-          <h2>📋 Daftar Lagu Terdaftar</h2>
-          <span className="song-count">{songs.length} Lagu</span>
+          <h2>Registered Songs</h2>
+          <span className="song-count">{songs.length} Songs</span>
         </div>
 
         <div className="song-grid">
@@ -103,26 +116,33 @@ function App() {
               
               <div className="song-stats">
                 <div className="stat">
-                  <span className="stat-label">▶️ Putaran</span>
+                  <span className="stat-label">Plays</span>
                   <span className="stat-value">{song.plays}</span>
                 </div>
                 <div className="stat">
-                  <span className="stat-label">💰 Royalti</span>
+                  <span className="stat-label">Royalty</span>
                   <span className="stat-value">{song.totalRoyalty} ETH</span>
                 </div>
               </div>
 
               <div className="song-actions">
-                <button className="btn-play" disabled={!account}>
-                  ▶️ Putar & Bayar
+                <button 
+                  className="btn-play" 
+                  disabled={!account}
+                  onClick={() => handlePlayAndPay(song.id, song.title, song.totalRoyalty)}
+                >
+                  Play & Pay
                 </button>
-                <button className="btn-detail">
-                  📖 Detail
+                <button 
+                  className="btn-detail"
+                  onClick={() => handleDetail(song.id, song.title)}
+                >
+                  Details
                 </button>
               </div>
               
               {!account && (
-                <p className="login-warning">🔒 Connect wallet dulu untuk memutar lagu</p>
+                <p className="login-warning">Connect wallet first to play songs</p>
               )}
             </div>
           ))}
@@ -131,8 +151,8 @@ function App() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>© 2025 Music Royalty System</p>
-        <p className="footer-note">Sistem Manajemen Royalti Musik Berbasis Smart Contract</p>
+        <p className="footer-copyright">© 2025 Music Royalty System</p>
+        <p className="footer-note">Smart Contract Based Music Royalty Management System</p>
       </footer>
     </div>
   );

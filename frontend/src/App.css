@@ -20,7 +20,6 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  /* HAPUS SEMUA margin dan border-radius */
 }
 
 .logo {
@@ -31,6 +30,7 @@ body {
 
 .logo-icon {
   font-size: 28px;
+  font-weight: bold;
 }
 
 .logo-text {
@@ -51,6 +51,7 @@ body {
 .hero h1 {
   font-size: 48px;
   margin-bottom: 16px;
+  font-weight: 700;
 }
 
 .hero p {
@@ -68,6 +69,12 @@ body {
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* AREA KONTEN - BACKGROUND TRANSPARAN, IKUT WARNA BODY */
@@ -75,6 +82,7 @@ body {
   width: 100%;
   padding: 40px 32px;
   background: transparent;
+  flex: 1;
 }
 
 /* SECTION HEADER - TETAP DI TENGAH TAPI BACKGROUNDNYA TRANSPARAN */
@@ -93,13 +101,15 @@ body {
 
 .section-header h2 {
   font-size: 28px;
+  font-weight: 600;
 }
 
 .song-count {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 14px;
+  font-weight: 500;
 }
 
 /* GRID LAGU - TETAP DI TENGAH */
@@ -117,35 +127,39 @@ body {
   background: white;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .song-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
 .song-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
 }
 
 .song-id {
   background: #667eea;
   color: white;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
 .song-genre {
   background: #f0f0f0;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
+  font-weight: 500;
 }
 
 .song-title {
@@ -177,9 +191,11 @@ body {
 
 .stat-label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   color: #999;
   margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
@@ -203,6 +219,12 @@ body {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-play:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .btn-play:disabled {
@@ -217,15 +239,22 @@ body {
   border: none;
   padding: 10px;
   border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-detail:hover {
+  background: #e0e0e0;
+  color: #333;
 }
 
 .login-warning {
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 11px;
   color: white;
   text-align: center;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.6);
   padding: 8px;
   border-radius: 8px;
 }
@@ -242,6 +271,12 @@ body {
 
 .footer p {
   margin: 5px 0;
+}
+
+.footer-copyright {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .footer-note {
@@ -265,17 +300,19 @@ body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .btn-connect:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .wallet-info {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   padding: 8px 16px;
   border-radius: 40px;
 }
@@ -287,17 +324,19 @@ body {
 }
 
 .btn-disconnect {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-disconnect:hover {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 /* RESPONSIVE */
@@ -306,8 +345,13 @@ body {
     font-size: 32px;
   }
   
+  .hero p {
+    font-size: 14px;
+  }
+  
   .navbar {
     flex-direction: column;
+    gap: 12px;
     text-align: center;
     padding: 16px;
   }
@@ -322,6 +366,13 @@ body {
   
   .song-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
   
   .section-header h2 {
@@ -330,5 +381,28 @@ body {
   
   .footer {
     padding: 20px 16px;
+  }
+  
+  .wallet-section {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 24px;
+  }
+  
+  .song-stats {
+    gap: 10px;
+  }
+  
+  .song-actions {
+    flex-direction: column;
+  }
+  
+  .btn-play, .btn-detail {
+    padding: 10px;
   }
 }
