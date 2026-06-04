@@ -198,11 +198,3 @@ Tambahkan jaringan Hardhat Local atau Sepolia ke MetaMask dan gunakan akun yang 
 * Data lagu tersimpan pada blockchain
 * Minimal satu transaksi berhasil dijalankan
 * Data pada frontend berubah sesuai data blockchain
-
----
-
-## Tim Pengembang
-
-* Frontend & UI/UX : Devi Ariyani
-* Smart Contract & Blockchain : [Nama Anggota]
-* Integrasi Sistem : Seluruh Anggota Kelompok
