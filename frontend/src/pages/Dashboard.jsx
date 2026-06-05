@@ -1,13 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { Music2, Coins, Play, Users, ArrowRight, MonitorSpeaker, Wallet } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import { recentSongs, royaltyChartData } from '../data/mockData';
 
 const stats = [
   { label: 'TOTAL LAGU', value: '1,284', change: '+12%', icon: Music2 },
-  { label: 'TOTAL ROYALTI ETH', value: '84.52', unit: 'ETH', change: '+5.4%', icon: Coins },
   { label: 'TOTAL PLAYS', value: '12.4M', change: '+21%', icon: Play },
   { label: 'TOTAL KOLABORATOR', value: '342', badge: 'Active', icon: Users },
 ];
@@ -29,7 +27,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar onUpload={() => navigate('/upload')} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Hero Banner */}
@@ -51,15 +48,6 @@ export default function Dashboard() {
             <p className="text-sm text-[#8aaa8a] mt-3 leading-relaxed max-w-sm">
               Transparent blockchain-based royalty distribution for the next generation of independent artists. Track, claim, and manage your earnings in real-time.
             </p>
-            <div className="flex gap-3 mt-6">
-              <button className="btn-primary text-sm">
-                <Wallet size={14} />
-                Connect Wallet
-              </button>
-              <button className="btn-outline text-sm">
-                View Whitepaper
-              </button>
-            </div>
           </div>
           <div className="absolute right-10 top-1/2 -translate-y-1/2 opacity-30">
             <MonitorSpeaker size={160} className="text-[#39e07a]" />
@@ -144,46 +132,6 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
-        {/* Chart + Claim */}
-        <div className="grid grid-cols-3 gap-4 px-4 mt-4 mb-4">
-          <div className="card col-span-2 p-5">
-            <h3 className="font-semibold text-[#e0ffe0] mb-4">Royalty Distribution Flow</h3>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={royaltyChartData} barCategoryGap="30%">
-                <XAxis
-                  dataKey="month"
-                  tick={{ fontSize: 11, fontFamily: 'JetBrains Mono', fill: '#4d7a4d' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis hide />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#39e07a08' }} />
-                <Bar dataKey="value" fill="#1a3e2a" radius={[4, 4, 0, 0]}>
-                  {royaltyChartData.map((_, i) => (
-                    <rect key={i} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="card p-5 flex flex-col justify-between border-[#39e07a33]">
-            <div>
-              <h3 className="font-semibold text-[#39e07a] text-base mb-2">Claim Rewards</h3>
-              <p className="text-sm text-[#8aaa8a] leading-relaxed">
-                You have 2.4 ETH ready for distribution across 12 active licenses.
-              </p>
-            </div>
-            <div>
-              <button className="btn-primary w-full justify-center mt-4">
-                <Wallet size={14} />
-                Claim Now
-              </button>
-            </div>
-          </div>
-        </div>
-
         <Footer />
       </div>
     </div>

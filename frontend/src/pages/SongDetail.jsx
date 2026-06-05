@@ -2,7 +2,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Play, Copy, CheckCircle, ExternalLink, Filter, Download, Shield } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useState } from 'react';
-import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import { songs } from '../data/mockData';
 
@@ -40,7 +39,6 @@ export default function SongDetail() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar onUpload={() => navigate('/upload')} />
 
       <div className="flex-1 flex flex-col">
         <div className="flex-1 px-6 py-6 max-w-5xl mx-auto w-full">
