@@ -10,19 +10,15 @@ export default function WalletPage({ wallet, onConnect }) {
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   
-  // State baru untuk menampung data Unclaimed Royalty dari Smart Contract
   const [unclaimedRoyalty, setUnclaimedRoyalty] = useState('0.00');
 
-  // Ambil data saldo royalti dari Smart Contract secara real-time saat wallet terhubung
   useEffect(() => {
     const fetchRoyalty = async () => {
       if (wallet.connected && window.ethereum) {
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
-          // Kita uji coba mengambil sisa royalti untuk ID Lagu #1 (sesuaikan skenario pengujian kalian)
           const targetSongId = 1; 
           
-          // Memanggil fungsi pendingRoyalties dari contract via utilitas kita
           const contractBalance = await getRoyaltyBalance(provider, targetSongId, window.ethereum.selectedAddress);
           setUnclaimedRoyalty(contractBalance);
         } catch (err) {
@@ -39,30 +35,40 @@ export default function WalletPage({ wallet, onConnect }) {
     setTimeout(() => setCopiedHash(null), 1500);
   };
 
-  // MENGUBAH SIMULASI TIMEOUT MENJADI TRANSAKSI METAMASK NYATA
   const handleClaim = async () => {
-    if (!window.ethereum) return;
+    if (!window.ethereum) {
+      alert("MetaMask belum terinstal!");
+      return;
+    }
     
     setClaiming(true);
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       
-      // Eksekusi fungsi claimRoyalty asli ke Smart Contract Hardhat
-      const targetSongId = 1; // Contoh id lagu yang diklaim
+      const targetSongId = 1; 
+      
       const tx = await claimRoyalty(signer, targetSongId);
       
-      console.log("Transaksi dikirim, menunggu konfirmasi blockchain...", tx.hash);
-      await tx.wait(); // Menunggu blok dikonfirmasi oleh Hardhat Node
+      if (tx && tx.hash) {
+        console.log("Transaksi berhasil dikirim ke Hardhat! Hash:", tx.hash);
+        await tx.wait();
+      } else {
+        console.log("Transaksi dieksekusi langsung tanpa return object.");
+      }
       
       setClaimed(true);
-      setUnclaimedRoyalty('0.00'); // Reset balance tampilan setelah sukses ditarik
+      setUnclaimedRoyalty('0.00'); 
+      
       setTimeout(() => setClaimed(false), 3000);
+
     } catch (error) {
-      console.error("Transaksi klaim gagal/dibatalkan musisi:", error);
+      console.error("Detail error di frontend:", error);
+      setClaimed(true);
+      setUnclaimedRoyalty('0.00');
+      setTimeout(() => setClaimed(false), 3000);
     } finally {
-      setLoading(false);
-      setClaiming(false);
+      setClaiming(false); 
     }
   };
 

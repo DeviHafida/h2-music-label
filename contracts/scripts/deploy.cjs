@@ -1,24 +1,29 @@
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
-  console.log("Sedang memulai proses deploy contract...");
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with account:", deployer.address);
 
-  // Mengambil contract factory dari artifacts
-  const MusicRoyalty = await hre.ethers.getContractFactory("MusicRoyalty");
-  
-  // Proses deploy ke jaringan
+  const MusicRoyalty = await ethers.getContractFactory("MusicRoyalty");
   const contract = await MusicRoyalty.deploy();
-  
-  // MENGGUNAKAN SINTAKS BARU (Ethers v6)
-  await contract.waitForDeployment(); 
-
-  // MENGGUNAKAN .getAddress() UNTUK FORMAT BARU
+  await contract.waitForDeployment();
   const contractAddress = await contract.getAddress();
+  console.log("MusicRoyalty deployed to:", contractAddress);
 
-  console.log("====================================================");
-  console.log(`PROSES BERHASIL!`);
-  console.log(`MusicRoyalty Smart Contract Address: ${contractAddress}`);
-  console.log("====================================================");
+  console.log("Menjalankan simulasi data awal...");
+  
+  const collaborators = [deployer.address];
+  const shares = [100];
+  
+  const regTx = await contract.registerSong("Lagu Demo UAS", "Artis Lokal", "Pop", collaborators, shares);
+  await regTx.wait();
+  console.log("Sukses mendaftarkan Lagu ID #1!");
+
+  const playTx = await contract.playSong(1, { value: ethers.parseEther("1.0") });
+  await playTx.wait();
+  console.log("Sukses memutar lagu! Saldo royalti 1 ETH masuk ke kontrak.");
+
+  console.log("Siap ditransaksikan di frontend!");
 }
 
 main().catch((error) => {

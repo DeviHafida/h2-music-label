@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Play, Copy, CheckCircle, ExternalLink, Filter, Download, Shield } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; 
 import Footer from '../components/Footer';
-import { songs } from '../data/mockData';
+import { ethers } from 'ethers'; 
+import { ROYALTY_CONTRACT_ADDRESS } from '../lib/ethersIntegration'; 
 
 const PIE_COLORS = ['#39e07a', '#8b5cf6', '#4d7a4d'];
 
@@ -23,19 +24,90 @@ export default function SongDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-  const song = songs.find((s) => s.id === id) ?? songs[0];
+  const [song, setSong] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const distributionData = [
-    { name: 'Singer', value: 50 },
-    { name: 'Producer', value: 30 },
-    { name: 'Label Pool', value: 20 },
-  ];
+  useEffect(() => {
+    const fetchSongFromBlockchain = async () => {
+      if (!window.ethereum) return;
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contractABI = [
+          "function getSongDetails(uint256 _songId) external view returns (string memory title, string memory artist, string memory genre, uint256 totalPlays, address[] memory collaborators, uint256[] memory shares)",
+          "function songCounter() external view returns (uint256)"
+        ];
+        
+        const contract = new ethers.Contract(ROYALTY_CONTRACT_ADDRESS, contractABI, provider);
+        
+        const currentCounter = await contract.songCounter();
+        const targetId = Number(id);
+        
+        if (targetId > 0 && targetId <= Number(currentCounter)) {
+          const [title, artist, genre, totalPlays, collaborators, shares] = await contract.getSongDetails(targetId);
+          
+          const formattedCollaborators = collaborators.map((addr, index) => ({
+            name: addr.toLowerCase() === window.ethereum.selectedAddress?.toLowerCase() 
+              ? "You (Musician)" 
+              : `Collaborator ${index + 1}`,
+            role: index === 0 ? "Main Artist" : "Co-Writer",
+            walletAddress: `${addr.substring(0, 6)}...${addr.substring(38)}`,
+            share: `${shares[index].toString()}%`,
+            status: "Active"
+          }));
+          const estimatedEth = Number(totalPlays) * 1.0; 
+
+          setSong({
+            title: title,
+            artist: artist,
+            releaseDate: "2026-06-15", 
+            coverUrl: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300",
+            contractAddress: ROYALTY_CONTRACT_ADDRESS,
+            mints: Number(totalPlays) > 0 ? Number(totalPlays) : 1,
+            floorPrice: "1.00 ETH",
+            plays: totalPlays.toString(),
+            shares: shares.length.toString(),
+            totalCollectedEth: estimatedEth.toFixed(2),
+            milestonePercent: estimatedEth > 0 ? 100 : 0,
+            streamingEth: estimatedEth.toFixed(2),
+            licensingEth: "0.00",
+            nftRoyaltiesEth: "0.00",
+            collaborators: formattedCollaborators,
+            distribution: collaborators.map((addr, index) => ({
+              name: `Wallet ${addr.substring(2, 6)}`,
+              value: Number(shares[index])
+            }))
+          });
+        }
+      } catch (err) {
+        console.error("Gagal menjemput data lagu dari Hardhat Node:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSongFromBlockchain();
+  }, [id]);
 
   const handleCopy = () => {
+    if (!song) return;
     navigator.clipboard.writeText(song.contractAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
+  if (loading) {
+    return <div className="flex-1 text-center py-20 font-mono text-[#39e07a]">Menghubungkan ke Node Hardhat...</div>;
+  }
+
+  if (!song) {
+    return (
+      <div className="flex-1 text-center py-20 font-mono text-red-400">
+        Lagu ID #{id} belum didaftarkan/ditemukan di Blockchain lokal.
+      </div>
+    );
+  }
+
+  const distributionData = song.distribution;
 
   return (
     <div className="flex min-h-screen">

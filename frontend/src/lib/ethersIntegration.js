@@ -1,25 +1,21 @@
 import { ethers } from 'ethers';
 
-// 1. ABI DISESUAIKAN PERSIS DENGAN FUNGSI DI MUSICROYALTY.SOL KAMU
 export const ROYALTY_CONTRACT_ABI = [
-  // Fungsi Write
-  'function registerSong(string memory _title, string memory _artist, string memory _genre, address[] memory _collaborators, uint[] memory _shares) external',
-  'function playSong(uint _songId) external payable',
-  'function claimRoyalty(uint _songId) external',
+  'function registerSong(string _title, string _artist, string _genre, address[] _collaborators, uint256[] _shares)',
+  'function playSong(uint256 _songId) payable',
+  'function claimRoyalty(uint256 _songId)',
   
-  // Fungsi Read
-  'function getSongDetails(uint _songId) external view returns (string memory title, string memory artist, string memory genre, uint totalPlays, address[] memory collaborators, uint[] memory shares)',
-  'function getAllSongs() external view returns (tuple(uint id, string title, string artist, string genre, address[] collaborators, uint[] shares, uint totalPlays, bool isActive)[])',
-  'function getTotalSongs() external view returns (uint)',
-  'function pendingRoyalties(uint, address) external view returns (uint)',
+  'function getSongDetails(uint256 _songId) view returns (string title, string artist, string genre, uint256 totalPlays, address[] collaborators, uint256[] shares)',
+  'function getAllSongs() view returns ((uint256 id, string title, string artist, string genre, address[] collaborators, uint256[] shares, uint256 totalPlays, bool isActive)[])',
+  'function getTotalSongs() view returns (uint256)',
+  'function songCounter() view returns (uint256)', 
+  'function pendingRoyalties(uint256, address) view returns (uint256)',
 
-  // Events
-  'event SongRegistered(uint indexed songId, string title, address indexed owner)',
-  'event SongPlayed(uint indexed songId, address indexed listener, uint amount)',
-  'event RoyaltyClaimed(uint indexed songId, address indexed collaborator, uint amount)'
+  'event SongRegistered(uint256 indexed songId, string title, address indexed owner)',
+  'event SongPlayed(uint256 indexed songId, address indexed listener, uint256 amount)',
+  'event RoyaltyClaimed(uint256 indexed songId, address indexed collaborator, uint256 amount)'
 ];
 
-// 2. GANTI INI DENGAN ALAMAT KONTRAK HASIL DEPLOY KAMU (Contoh: '0x5FbDB2315678afecb367f032d93F642f64180aa3')
 export const ROYALTY_CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 export async function connectWallet() {
@@ -46,20 +42,15 @@ export async function disconnectWallet() {
   return { address: null, balance: null, chainId: null, connected: false };
 }
 
-// Mengambil object contract siap pakai
 export async function getContract(signerOrProvider) {
   return new ethers.Contract(ROYALTY_CONTRACT_ADDRESS, ROYALTY_CONTRACT_ABI, signerOrProvider);
 }
 
-// --- FUNGSI PENDUKUNG TRANSAKSI (Bisa dipakai di halaman Catalog / Upload nanti) ---
-
-// Fungsi untuk mengklaim Royalti berdasarkan ID Lagu
 export async function claimRoyalty(signer, songId) {
   const contract = await getContract(signer);
   return contract.claimRoyalty(songId);
 }
 
-// Fungsi untuk melihat saldo royalti yang belum ditarik oleh musisi di suatu lagu
 export async function getRoyaltyBalance(provider, songId, artistAddress) {
   const contract = await getContract(provider);
   const balance = await contract.pendingRoyalties(songId, artistAddress);
